@@ -1,18 +1,18 @@
-import _ from 'underscore';
+const _ = require('underscore');
 
 function fail(thing) {
   throw Error(thing);
 }
 
-export function existy(x) {
+function existy(x) {
   return x != null;
 }
 
-export function truthy(x) {
+function truthy(x) {
   return x !== false && existy(x);
 }
 
-export function doWhen(cond, action) {
+function doWhen(cond, action) {
   if (truthy(cond)) {
     return action();
   } else {
@@ -20,11 +20,11 @@ export function doWhen(cond, action) {
   }
 }
 
-export function isIndexed(x) {
+function isIndexed(x) {
   return _.isArray(x) || _.isString(x);
 }
 
-export function nth(a, index) {
+function nth(a, index) {
   if (!_.isNumber(index)) {
     fail('expected number as index');
   }
@@ -37,11 +37,11 @@ export function nth(a, index) {
   return a[index];
 }
 
-export function second(a) {
+function second(a) {
   return nth(a, 1);
 } 
 
-export function cat(...args: any[]) {
+function cat(...args) {
   const head = _.first(args);
   if (existy(head)) {
     return head.concat(... _.rest(args));
@@ -50,27 +50,27 @@ export function cat(...args: any[]) {
   }
 }
 
-export function construct(head, tail) {
+function construct(head, tail) {
   return cat([head], _.toArray(tail));
 }
 
-export function mapcat(fun, coll) {
+function mapcat(fun, coll) {
   return cat(... _.map(coll, fun));
 }
 
-export function butLast(coll) {
+function butLast(coll) {
   return _.toArray(coll).slice(0, -1);
 }
 
-export function interpose(inter, coll) {
+function interpose(inter, coll) {
   return butLast(mapcat(x => construct(x, [inter]), coll));
 }
 
-export function project(table, keys) {
+function project(table, keys) {
   return _.map(table, x => _.pick(x, keys))
 }
 
-export function rename(obj, newNames) {
+function rename(obj, newNames) {
   return _.reduce(newNames, (o, nu, old) => {
     if (_.has(obj, old)) {
       o[nu] = obj[old];
@@ -80,11 +80,11 @@ export function rename(obj, newNames) {
   _.omit(obj, _.keys(newNames)));
 }
 
-export function as(table, newNames) {
+function as(table, newNames) {
   return _.map(table, x => rename(x, newNames));
 }
 
-export function restrict(table, pred) {
+function restrict(table, pred) {
   return _.reduce(table, (newTable, obj) => {
     if (truthy(pred(obj))) {
       return newTable
@@ -95,13 +95,13 @@ export function restrict(table, pred) {
   table);
 }
 
-export function plucker(field) {
+function plucker(field) {
   return function(obj) {
     return obj && obj[field];
   }
 }
 
-export function finder(valueFun, bestFun, coll) {
+function finder(valueFun, bestFun, coll) {
   return _.reduce(coll, (best, current) => {
     const bestValue = valueFun(best);
     const currentValue = valueFun(current);
@@ -109,21 +109,21 @@ export function finder(valueFun, bestFun, coll) {
   });
 }
 
-export function best(fun, coll) {
+function best(fun, coll) {
   return _.reduce(coll, (x, y) => fun(x, y) ? x : y);
 }
 
-export function always(value) {
+function always(value) {
   return function() {
     return value;
   }
 }
 
-export function repeatedly(times, fun) {
+function repeatedly(times, fun) {
   return _.map(_.range(times), fun);
 }
 
-export function iterateUntil(fun, check, init) {
+function iterateUntil(fun, check, init) {
   const ret = [];
   let result = fun(init);
 
@@ -135,8 +135,8 @@ export function iterateUntil(fun, check, init) {
   return ret;
 }
 
-export function invoker(name, method) {
-  return function(target, ...args: any[]) {
+function invoker(name, method) {
+  return function(target, ...args) {
     if (!existy(target)) {
       fail('must provide target');
     }
@@ -145,22 +145,22 @@ export function invoker(name, method) {
   }
 }
 
-export function fnull(fun, ... defaults: any[]) {
-  return (... args: any[]) => fun(... _.map(args, (arg, i) => existy(arg) ? arg : defaults[i]));
+function fnull(fun, ... defaults) {
+  return (... args) => fun(... _.map(args, (arg, i) => existy(arg) ? arg : defaults[i]));
 }
 
-export function defaults(d) {
+function defaults(d) {
   return function(o, k) {
     const val = fnull(_.identity, d[k]);
     return o && val(o[k]);
   };
 }
 
-export function aMap(obj) {
+function aMap(obj) {
   return _.isObject(obj);
 }
 
-export function hasKeys(... keys: any[]) {
+function hasKeys(... keys) {
   const fun = function(obj) {
     return _.every(keys, k => _.has(obj, k));
   };
@@ -168,15 +168,15 @@ export function hasKeys(... keys: any[]) {
   return fun;
 }
 
-export function validator(message, fun) {
-  const f = function(... args: any[]) {
+function validator(message, fun) {
+  const f = function(... args) {
     return fun(... args);
   };
   f.message = message;
   return f;
 }
 
-export function checker(... validators: any[]) {
+function checker(... validators) {
   return function(obj) {
     return _.reduce(validators, (errs, check) => {
       if (check(obj)) {
@@ -188,10 +188,10 @@ export function checker(... validators: any[]) {
   };
 }
 
-export function dispatch(... funs: any[]) {
+function dispatch(... funs) {
   const size = funs.length;
 
-  return function(target, ... args: any[]) {
+  return function(target, ... args) {
     let ret = undefined;
 
     for (let funIndex = 0; funIndex < size; funIndex++) {
@@ -207,13 +207,13 @@ export function dispatch(... funs: any[]) {
   }
 }
 
-export function stringReverse(s) {
+function stringReverse(s) {
   if (_.isString(s)) {
     return s.split('').reverse().join('');
   }
 }
 
-export function isa(type, action) {
+function isa(type, action) {
   return function(obj) {
     if (type === obj.type) {
       return action(obj);
@@ -221,13 +221,13 @@ export function isa(type, action) {
   }
 }
 
-export function curry(fun) {
+function curry(fun) {
   return function(arg) {
     return fun(arg);
   }
 }
 
-export function curry2(fun) {
+function curry2(fun) {
   return function(secondArg) {
     return function(firstArg) {
       return fun(firstArg, secondArg);
@@ -235,27 +235,27 @@ export function curry2(fun) {
   }
 }
 
-export function partial1(fun, arg1) {
-  return function(... args: any[]) {
+function partial1(fun, arg1) {
+  return function(... args) {
     args = construct(arg1, args);
     return fun(... args);
   }
 }
 
-export function partial2(fun, arg1, arg2) {
-  return function(... args: any[]) {
+function partial2(fun, arg1, arg2) {
+  return function(... args) {
     args = cat([arg1, arg2], args);
     return fun(... args);
   }
 }
 
-export function partial(fun, ... args: any[]) {
-  return function(... pargs: any[]) {
+function partial(fun, ... args) {
+  return function(... pargs) {
     return fun(... [...args, ...pargs]);
   }
 }
 
-export function condition1(... validators: any[]) {
+function condition1(... validators) {
   return function(fun, arg) {
     const errors = mapcat(isValid => isValid(arg) ? [] : [isValid.message], validators);
 
@@ -267,13 +267,13 @@ export function condition1(... validators: any[]) {
   }
 }
 
-export function not(x) {
+function not(x) {
   return !x;
 }
 
-export const isntString = _.compose(not, _.isString);
+const isntString = _.compose(not, _.isString);
 
-export function myLength(arr) {
+function myLength(arr) {
   if (_.isEmpty(arr)) {
     return 0;
   } else {
@@ -281,7 +281,7 @@ export function myLength(arr) {
   } 
 }
 
-export function cycle(times, arr) {
+function cycle(times, arr) {
   if (times <= 0) {
     return [];
   } else {
@@ -289,7 +289,7 @@ export function cycle(times, arr) {
   }
 }
 
-export function tcLength(arr, n) {
+function tcLength(arr, n) {
   const l = n ? n : 0;
 
   if (_.isEmpty(arr)) {
@@ -299,7 +299,7 @@ export function tcLength(arr, n) {
   } 
 }
 
-export function flat(arr) {
+function flat(arr) {
   if (_.isArray(arr)) {
     return cat(... _.map(arr, flat));
   } else {
@@ -307,6 +307,10 @@ export function flat(arr) {
   }
 }
 
-export function pipeline(seed, ... funs: any[]) {
+function pipeline(seed, ... funs) {
   return _.reduce(funs, (l, r) => r(l), seed);
+}
+
+module.exports = {
+  always, aMap, as, best, butLast, cat, checker, condition1, construct, curry, curry2, cycle, defaults, dispatch, doWhen, existy, finder, flat, fnull, hasKeys, interpose, invoker, isa, isIndexed, isntString, iterateUntil, mapcat, myLength, nth, partial, partial1, partial2, pipeline, plucker, project, rename, repeatedly, restrict, stringReverse, tcLength, truthy, validator
 }

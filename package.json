@@ -13,6 +13,8 @@
     "jest": "^26.5.0"
   },
   "dependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/underscore": "^1.10.24",
     "underscore": "^1.11.0"
   }
 }
