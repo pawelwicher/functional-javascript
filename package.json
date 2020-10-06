@@ -1,0 +1,18 @@
+{
+  "name": "functional-javascript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "author": "wichu <wichu1@op.pl> (wichu1.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^26.5.0"
+  },
+  "dependencies": {
+    "underscore": "^1.11.0"
+  }
+}
